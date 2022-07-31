@@ -7,4 +7,8 @@
 ![image](https://user-images.githubusercontent.com/61390950/182006567-5e5cfcbe-7549-4205-902e-54706d2c1793.png)
 
 
+## ✨ Features
 
+- 🕹 Simple and clear user interface
+- 🚀 Super fast
+- 🛠 More features in development
