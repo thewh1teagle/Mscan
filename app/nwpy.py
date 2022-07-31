@@ -14,7 +14,7 @@ from queue import Queue
 from threading import Thread
 from netaddr import IPNetwork
 from mac_vendor_lookup import MacLookup
-
+from ipaddress import IPv4Address
 
 def calc_percentage(part, whole):
     return str(int(( 100 * float(part)//float(whole) )))
@@ -224,7 +224,7 @@ def scan(ifname):
     arp_data.insert(1,
         {'ip': get_ip_address(ifname), 'mac': my_mac, 'vendor': MacLookup().lookup(my_mac), 'hostname': 'Your pc'}
     )
-    arp_data.sort(key=lambda x: x['ip'].split('.')[-1])
+    arp_data.sort(key=lambda x: IPv4Address( x['ip'] ))
     return arp_data
 
 
