@@ -3,22 +3,21 @@ import React, { useEffect } from "react";
 import { eel } from "../App";
 
 
-
-
 interface SelectInterfaceProps {
-    currentInterface: string,
-    setCurrentInterface: React.Dispatch<React.SetStateAction<string>>,
+    currentInterface: any,
+    setCurrentInterface: React.Dispatch<React.SetStateAction<any>>,
 }
 
 export const SelectInterface: React.FC<SelectInterfaceProps> = ({currentInterface, setCurrentInterface}) => {
-    const [interfaces, setInterfaces] = React.useState<string[]>([]);
+    const [interfaces, setInterfaces] = React.useState<any[]>([]);
     useEffect(() => {
-        eel.listInterfaces()((result: string[]) => {
-            setInterfaces(result);
-        })
-        eel.defaultInterface()((default_interface: string) => {
+        eel.defaultInterface()((default_interface: any) => {
             setCurrentInterface(default_interface);
         })
+        eel.listInterfaces()((result: any[]) => {
+            setInterfaces(result);
+        })
+
     }, [setCurrentInterface])
     return (
         <>
@@ -27,13 +26,13 @@ export const SelectInterface: React.FC<SelectInterfaceProps> = ({currentInterfac
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={currentInterface}
                     label="Interface"
                     onChange={e => setCurrentInterface(e.target.value)}
                 >
-                    {interfaces.map((i: any) => (
-                        <MenuItem key={i.name} value={i.name}>{i.name}</MenuItem>
-                    ))}
+                    {interfaces.map((i: any, idx) => {
+                        const selected = i.name === currentInterface.name
+                        return <MenuItem key={i.name} value={i}>{i.name}</MenuItem>
+                    })}
                 </Select>
             </FormControl>
         </>

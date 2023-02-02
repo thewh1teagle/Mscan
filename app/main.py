@@ -1,29 +1,35 @@
 """Main Python application file for the EEL-CRA demo."""
 
-import os
 import pathlib
 import platform
-import random
 import sys
-
 import eel
-from nwpy import scan, get_default_iface_name_linux, list_interfaces
+from scanner.interface import InterfaceManager, Interface
+from scanner.scanner import Scanner
 
-UI_FOLDER = (pathlib.Path(__file__) / '../../ui').absolute()
+
+imanager = InterfaceManager()
+scanner = Scanner()
+
+UI_FOLDER = (pathlib.Path(__file__) / '../../ui').resolve().absolute()
 
 
 @eel.expose('defaultInterface')
 def default_interface():
-    return get_default_iface_name_linux()
+    default = imanager.get_default()
+    if default:
+        return default.to_dict()
+    
 
 @eel.expose('listInterfaces')
 def eel_list_interfaces():
-    return list_interfaces()
+    return [i.to_dict() for i in imanager.get_interfaces()]
 
 @eel.expose('scan')
 def scan_network(iface):
     """Scan the network for hosts."""
-    return scan(iface)
+    iface = Interface.from_dict(iface)
+    return [i.to_dict() for i in scanner.scan(iface)]
 
 def start_eel(develop):
     """Start Eel with either production or development configuration."""
@@ -40,8 +46,6 @@ def start_eel(develop):
     eel.init(directory, ['.tsx', '.ts', '.jsx', '.js', '.html'])
 
     eel.say_hello_js('Python World!')   # Call a JavaScript function (must be after `eel.init()`)
-
-    
 
     eel_kwargs = dict(
         host='localhost',

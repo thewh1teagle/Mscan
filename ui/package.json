@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start:js": "react-scripts start",
-    "start:eel": "cd ../app && python3 main.py true",
+    "start:eel": "cd ../app & python main.py true",
     "start": "npm-run-all -p start:*",
     "build:js": "react-scripts build",
     "build:eel": "python3 -m eel ../app/main.py build --onefile --noconsole --name react-eel-app",

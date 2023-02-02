@@ -22,7 +22,7 @@ const Header = styled('div')`
 `
 
 const App = () => {
-  const [currentInterface, setCurrentInterface] = React.useState('');
+  const [currentInterface, setCurrentInterface] = React.useState({});
   const [scanState, setScanState] = React.useState<Status[]>([
     // ...Array(15).fill({
     //   ip: '10.0.0.1',
