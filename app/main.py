@@ -31,6 +31,10 @@ def scan_network(iface):
     iface = Interface.from_dict(iface)
     return [i.to_dict() for i in scanner.scan(iface)]
 
+@eel.expose('progress')
+def scan_progress():
+    return scanner.progress
+
 def start_eel(develop):
     """Start Eel with either production or development configuration."""
 
@@ -44,8 +48,6 @@ def start_eel(develop):
         page = 'index.html'
 
     eel.init(directory, ['.tsx', '.ts', '.jsx', '.js', '.html'])
-
-    eel.say_hello_js('Python World!')   # Call a JavaScript function (must be after `eel.init()`)
 
     eel_kwargs = dict(
         host='localhost',

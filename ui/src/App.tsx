@@ -11,10 +11,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 export const eel = window.eel
 eel.set_host( 'ws://localhost:8888' )
 
-function sayHelloJS( x: any ) {
-  console.log( 'Hello from ' + x )
-}
-window.eel.expose( sayHelloJS, 'say_hello_js' )
 
 
 const Header = styled('div')`
@@ -37,10 +33,16 @@ const App = () => {
   const scan = () => {
     setScanState([]);
     setLoading(true)
+    const intervalId = setInterval(() => {
+      const progress = eel.progress()
+      console.log('hi from interval')
+      console.log(progress)
+    }, 1000)
     eel.scan(currentInterface)((result: Status[]) => {
       setScanState(result)
       setLoading(false)
     })
+    clearInterval(intervalId)
   }
   return (
     <>
