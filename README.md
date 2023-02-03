@@ -6,6 +6,13 @@
 ## 🖥 User Interface
 ![image](https://user-images.githubusercontent.com/61390950/182006567-5e5cfcbe-7549-4205-902e-54706d2c1793.png)
 
+## 💿 Installation
+Install from pypi
+```
+pip3 install --upgrade modern-scan
+```
+then simply execute
+```mscan```
 
 ## ✨ Features
 
