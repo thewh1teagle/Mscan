@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "modern-scan"
+packages = [
+    {include = "mscan"}
+]
+version = "0.1.4"
+description = "Modern network scanner"
+authors = ["thewh1teagle <61390950+thewh1teagle@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.89.1"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+icmplib = "^3.0.3"
+mac-vendor-lookup = "^0.1.12"
+psutil = "^5.9.4"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+mscan = 'mscan.main:main'

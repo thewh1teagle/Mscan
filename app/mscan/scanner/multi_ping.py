@@ -1,6 +1,5 @@
 from typing import List
 from icmplib import async_ping
-import threading
 import asyncio
 
 async def async_multiping(addresses, count=2, interval=0.5, timeout=2,
@@ -38,39 +37,14 @@ async def async_multiping(addresses, count=2, interval=0.5, timeout=2,
 
     return [task.result() for task in tasks]
 
-class MultiPinger(threading.Thread):
+class MultiPinger:
     """ Multithreaded class for pinging hosts and display progress """
-    def __init__(self) -> None:
-        self._running = False
-        self._progress = 0
-        self._ips = None
-        self._hosts: List[str] = []
-        self._lock = threading.Lock()
-        threading.Thread.__init__(self)
 
-    def set_ips(self, ips):
-        self._ips = ips
+    def progress_cb(self, finished, total):
+        # print(f'total: {total} finished: {finished}')
+        self._progress = finished / total * 100
 
-    @property
-    def is_running(self):
-        with self._lock:
-            return self._running
-    
-    def progress(self):
-        with self._lock:
-            return self._progress
-    
-    def hosts(self):
-        with self._lock:
-            return self._hosts
-
-    def run(self):
-        if self._ips is None:
-            raise Exception("You havn't setted ips using set_ips")
-        with self._lock:
-            self._progress = 0
-            self._running = True
-        total = len(self._ips)
-        self.hosts = asyncio.run(async_multiping(self._ips, count=1, timeout=0.5, progress_callback=lambda a,b: print(a,b)))
+    async def ping(self, ips):
+        return await async_multiping(ips, count=1, timeout=0.5, progress_callback=self.progress_cb, privileged=False)
         
 

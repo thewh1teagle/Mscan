@@ -43,14 +43,12 @@ class InterfaceManager:
                     yield Interface.from_psutil(family, interface, snic)
 
     def get_default(self, family = socket.AF_INET):
-        ifaces = self.get_interfaces()
-        sock_ifaces = socket.getaddrinfo(socket.gethostname(), None)
-        sock_ifaces = list(filter(lambda s: s[0] == family, sock_ifaces))
-        if sock_ifaces:
-            first = sock_ifaces[0]
-            addr = first[-1][0]
-            return next((i for i in ifaces if i.address == addr), None)
-
+        ifaces = list(self.get_interfaces())
+        
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        default_if_ip = s.getsockname()[0]
+        return next((i for i in ifaces if i.address == default_if_ip), ifaces[0])
 
 
 

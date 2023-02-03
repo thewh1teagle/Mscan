@@ -1,5 +1,5 @@
 import subprocess
-from platform_detector import Platform
+from .platform_detector import Platform
 
 class Ping:
     """Cross platform ping"""

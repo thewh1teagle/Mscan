@@ -1,4 +1,4 @@
-from .interface import InterfaceManager
+from .interface import InterfaceManager, Interface
 from .platform_detector import Platform
 import subprocess
 import re
@@ -10,8 +10,6 @@ class Host:
     addr: str
     hwaddr: str
     addr_type: str
-
-
 
 class Arp:
     
@@ -32,7 +30,19 @@ class Arp:
         return tables.get(iface_ip)
 
     @staticmethod
-    def get_tables(iface_ip):
-        output = subprocess.run(["arp", "-a"], stdout=subprocess.PIPE).stdout.decode("utf-8")
-        tables = Arp.parse(output, iface_ip)
-        return tables or []
+    def get_tables(interface: Interface):
+        if Platform.WINDOWS:
+            output = subprocess.run(["arp", "-a"], stdout=subprocess.PIPE).stdout.decode("utf-8")
+            tables = Arp.parse(output, interface.address)
+            return tables or []
+        elif Platform.LINUX:
+            hosts = []
+            with open('/proc/net/arp', 'r') as f:
+                lines = f.read().splitlines()
+                lines = lines[1:]
+            for line in lines:
+                ip, hw_type, flags, hw_addr, _mask, ifname = line.split()
+                print(ifname, interface.name)
+                if ifname == interface.name and flags != "0x0":
+                    hosts.append(Host(ip, hw_addr, hw_type))
+            return hosts

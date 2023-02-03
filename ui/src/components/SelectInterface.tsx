@@ -1,6 +1,6 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select, Stack } from "@mui/material"
 import React, { useEffect } from "react";
-import { eel } from "../App";
+import * as api from '../Api';
 
 
 interface SelectInterfaceProps {
@@ -10,31 +10,33 @@ interface SelectInterfaceProps {
 
 export const SelectInterface: React.FC<SelectInterfaceProps> = ({currentInterface, setCurrentInterface}) => {
     const [interfaces, setInterfaces] = React.useState<any[]>([]);
-    useEffect(() => {
-        eel.defaultInterface()((default_interface: any) => {
-            setCurrentInterface(default_interface);
-        })
-        eel.listInterfaces()((result: any[]) => {
-            setInterfaces(result);
-        })
 
+    useEffect(() => {
+        async function loadInterfaces() {
+            const res = await api.getInterfaces()
+            setInterfaces(res.interfaces)
+            setCurrentInterface(res.default)
+        }
+        loadInterfaces()
     }, [setCurrentInterface])
+
+
+     const currentInterfaceIdx = interfaces.findIndex(i => i.name === currentInterface.name) || 0
+
     return (
-        <>
+        <Stack>
             <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Interface</InputLabel>
+                <InputLabel>Interface</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
                     label="Interface"
-                    onChange={e => setCurrentInterface(e.target.value)}
+                    onChange={e => setCurrentInterface(interfaces[e.target.value as number])}
+                    value={currentInterfaceIdx}
                 >
-                    {interfaces.map((i: any, idx) => {
-                        const selected = i.name === currentInterface.name
-                        return <MenuItem key={i.name} value={i}>{i.name}</MenuItem>
-                    })}
+                    {interfaces.map((i, idx) => 
+                        <MenuItem key={i.name} value={idx}>{i.name}</MenuItem> 
+                    )}
                 </Select>
             </FormControl>
-        </>
+        </Stack>
     )
 }
