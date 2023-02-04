@@ -42,7 +42,6 @@ class Arp:
                 lines = lines[1:]
             for line in lines:
                 ip, hw_type, flags, hw_addr, _mask, ifname = line.split()
-                print(ifname, interface.name)
                 if ifname == interface.name and flags != "0x0":
                     hosts.append(Host(ip, hw_addr, hw_type))
             return hosts

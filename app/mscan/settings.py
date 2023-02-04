@@ -10,7 +10,7 @@ args = parser.parse_args()
 
 
 # Settings
-DEV_MODE = False
+DEV_MODE = True
 HOST = args.host
 PORT = args.port
 PROTOCOL = 'http'

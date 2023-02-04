@@ -3,7 +3,7 @@ name = "modern-scan"
 packages = [
     {include = "mscan"}
 ]
-version = "0.1.4"
+version = "0.1.7"
 description = "Modern network scanner"
 authors = ["thewh1teagle <61390950+thewh1teagle@users.noreply.github.com>"]
 readme = "README.md"

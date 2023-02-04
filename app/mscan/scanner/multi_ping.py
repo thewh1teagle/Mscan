@@ -41,7 +41,6 @@ class MultiPinger:
     """ Multithreaded class for pinging hosts and display progress """
 
     def progress_cb(self, finished, total):
-        # print(f'total: {total} finished: {finished}')
         self._progress = finished / total * 100
 
     async def ping(self, ips):
