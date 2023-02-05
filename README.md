@@ -17,10 +17,16 @@ Simply run the command mscan
 $ mscan
 Mscan running at http://127.0.0.1:8000/
 ```
-
 ## ✨ Features
 
 - 🕹 Simple and clear user interface
 - 🌐️️ Cross platform
 - 🚀 Super fast
 - 🛠 More features in development
+
+## 🔌 API
+Mscan offers an API which you can access at the following route:
+```
+/docs
+```
+This endpoint contains all the necessary information to get started with using the Mscan API in your software.
