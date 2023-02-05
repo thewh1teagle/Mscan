@@ -55,7 +55,6 @@ const Report: React.FC<ScanResultProps> = ({ data, loading }) => {
   if (loading) {
     data = MockData()
   }
-  console.log(data)
   const isEmpty = data.length === 0
 
 

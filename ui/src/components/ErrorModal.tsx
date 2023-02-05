@@ -1,5 +1,6 @@
-import { Stack, styled, Typography } from "@mui/material";
+import { Stack, styled, SxProps, Typography } from "@mui/material";
 import { ReactNode, useState } from "react";
+
 
 const Modal = styled(Stack)({
   position: "absolute",
@@ -43,7 +44,8 @@ const CustomButtonStyle = styled("button")((props) => ({
   ...props,
 }));
 
-function CopyBtn({ children }: { children: ReactNode }) {
+
+function CopyBtn({ children, onClick }: { children: ReactNode, onClick: VoidFunction }) {
   const [showCopied, setShowCopied] = useState(false);
 
   function onCopy() {
@@ -63,18 +65,22 @@ function CopyBtn({ children }: { children: ReactNode }) {
 export default function ErrorModal({
   title,
   desc,
-  fullError,
   onClose,
+  titleSx
 }: {
   title: string;
   desc: string;
-  fullError?: string;
   onClose: VoidFunction;
+  titleSx?: SxProps
 }) {
   const [show, setShow] = useState(true);
 
   if (!show) {
     return null;
+  }
+
+  function copyError() {
+    navigator.clipboard.writeText(desc)
   }
 
   return (
@@ -85,6 +91,7 @@ export default function ErrorModal({
           fontWeight="bold"
           textAlign="center"
           color="red"
+          sx={{...titleSx}}
         >
           {title}
         </Typography>
@@ -102,7 +109,7 @@ export default function ErrorModal({
           justifyContent="center"
           gap="10px"
         >
-          <CopyBtn>Copy Error</CopyBtn>
+          <CopyBtn onClick={copyError}>Copy Error</CopyBtn>
 
           <CustomButtonStyle
             onClick={() => {

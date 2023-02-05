@@ -1,9 +1,9 @@
-from .interface import InterfaceManager, Interface
+from .interface import Interface
 from .platform_detector import Platform
 import subprocess
-import re
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List
+
 
 @dataclass
 class Host:
@@ -11,8 +11,9 @@ class Host:
     hwaddr: str
     addr_type: str
 
+
 class Arp:
-    
+
     @staticmethod
     def parse(output, iface_ip) -> List[Host]:
         lines = output.strip().split("\n")
@@ -32,7 +33,8 @@ class Arp:
     @staticmethod
     def get_tables(interface: Interface):
         if Platform.WINDOWS:
-            output = subprocess.run(["arp", "-a"], stdout=subprocess.PIPE).stdout.decode("utf-8")
+            proc = subprocess.run(["arp", "-a"], stdout=subprocess.PIPE)
+            output = proc.stdout.decode("utf-8")
             tables = Arp.parse(output, interface.address)
             return tables or []
         elif Platform.LINUX:

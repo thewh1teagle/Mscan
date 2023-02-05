@@ -1,6 +1,7 @@
 import platform
 from enum import Enum
 
+
 class Platform(Enum):
     LINUX = 'linux'
     MAC = 'darwin'

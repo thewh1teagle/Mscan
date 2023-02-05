@@ -1,13 +1,15 @@
-from .interface import InterfaceManager, Interface
-from .network import Network
-from .multi_ping import MultiPinger
-from .arp import Arp, Host as ArpHost
-from dataclasses import dataclass, asdict
-from mac_vendor_lookup import AsyncMacLookup, MacLookup
-from typing import List
-import socket
 import concurrent.futures
-import asyncio 
+import socket
+from dataclasses import dataclass, asdict
+from typing import List
+
+from mac_vendor_lookup import AsyncMacLookup
+
+from .arp import Arp, Host as ArpHost
+from .interface import Interface
+from .multi_ping import MultiPinger
+from .network import Network
+
 
 @dataclass
 class LiveHost:
@@ -21,24 +23,18 @@ class LiveHost:
 
 
 class Scanner:
-
     BLACKLIST_PREFIX = [str(i) for i in range(220, 265)]
     BLACKLIST_SUFFIX = ['255']
 
-    @property
-    def progress(self):
-        return self.multi.progress()
-
-
     @staticmethod
-    def get_hostnames(hosts: List[ArpHost], max_workers = 20):
-        
-        def job(host: ArpHost):
+    def get_hostnames(hosts: List[ArpHost], max_workers=20):
+
+        def job(arp_host: ArpHost):
             try:
-                hostname = socket.gethostbyaddr(host.addr)[0]
+                hostname = socket.gethostbyaddr(arp_host.addr)[0]
             except:
                 hostname = "unknown"
-            return {"host": host, "name": hostname}
+            return {"host": arp_host, "name": hostname}
 
         result = {}
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executer:
@@ -63,7 +59,6 @@ class Scanner:
     @staticmethod
     async def get_live_hosts(hosts: List[ArpHost]):
         live_hosts = []
-        ips = [i.addr for i in hosts]
         hostnames = Scanner.get_hostnames(hosts)
         for host in hosts:
             suffix = host.addr[-3:]

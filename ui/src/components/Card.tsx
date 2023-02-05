@@ -49,14 +49,17 @@ const CardContainer = styled(Box)({
 
 const Card: React.FC<CardProps> = ({ host }) => {
   if (!host.ip) {
-    return <CardContainer><Skeleton variant="rectangular" sx={{borderRadius: "10px"}} width="100%" height="100%"/></CardContainer>
+    return (
+      <CardContainer>
+        <Skeleton variant="rectangular" sx={{borderRadius: "10px"}} width="100%" height="100%"/>
+      </CardContainer>
+    )
   }
 
   return (
     <CardContainer>
       <InfoCell label="IP" value={host.ip} sx={{ fontSize: "0.95em" }} />
       <InfoCell label="MAC" value={host.mac} sx={{ fontSize: "0.95em" }} />
-      {/* <InfoCell label="MAC" value="aa:bb:cc:dd:ee:ff" /> */}
       <InfoCell label="VENDOR" value={host.vendor} sx={{ fontSize: "0.8em" }} />
       <InfoCell
         label="HOSTNAME"

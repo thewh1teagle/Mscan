@@ -9,6 +9,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 import uvicorn
 
+
 app = FastAPI()
 scanner = Scanner()
 imanager = InterfaceManager()
@@ -22,34 +23,47 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def index_route():
     return FileResponse(settings.UI_BUILD_PATH / "index.html")
 
+
 @app.get("/interfaces")
 async def interfaces_route():
     """ Get list of interfaces """
-    interfaces = [i.to_dict() for i in imanager.get_interfaces()]
+    # exclude 255.0.0.0 netmask since it has too many ips, billions...
+    interfaces = [
+        i.to_dict() for i in imanager.get_interfaces()
+        if i.prefix_length != 8
+    ]
     return {"interfaces": interfaces, "default": imanager.get_default()}
+
 
 @app.post("/scan")
 async def scan_route(interface: Interface):
     res = await scanner.scan(interface)
     return res
 
+
 app.mount("/", StaticFiles(directory=settings.UI_BUILD_PATH), name="public")
+
 
 def open_in_browser():
     webbrowser.open(f'{settings.PROTOCOL}://{settings.HOST}:{settings.PORT}')
 
+
 def main():
     threading.Timer(1.25, open_in_browser).start()
     uvicorn.run(
-        "main:app" if settings.DEV_MODE else app, 
+        "main:app" if settings.DEV_MODE else app,
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEV_MODE,
-        workers=1
+        workers=1,
+        log_level=settings.LOG_LEVEL
     )
+
+
 if __name__ == '__main__':
     main()
