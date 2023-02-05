@@ -4,7 +4,7 @@
 
 ## A modern network scanner
 ## 🖥 User Interface
-![image](https://user-images.githubusercontent.com/61390950/182006567-5e5cfcbe-7549-4205-902e-54706d2c1793.png)
+![image](https://user-images.githubusercontent.com/61390950/216823967-a06601df-4d3f-41a2-9324-ca0c5c5b9a52.png)
 
 ## 💿 Installation
 Install from pypi
