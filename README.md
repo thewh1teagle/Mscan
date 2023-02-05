@@ -11,11 +11,16 @@ Install from pypi
 ```
 pip3 install --upgrade modern-scan
 ```
-then simply execute
-```mscan```
+## 🖥 Usage
+Simply run the command mscan
+```shell
+$ mscan
+Mscan running at http://127.0.0.1:8000/
+```
 
 ## ✨ Features
 
 - 🕹 Simple and clear user interface
+- 🌐️️ Cross platform
 - 🚀 Super fast
 - 🛠 More features in development
