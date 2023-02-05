@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 import uvicorn
-
+import socket
 
 app = FastAPI()
 scanner = Scanner()
@@ -22,6 +22,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def local_ip():
+    try:
+        return socket.gethostbyname(socket.gethostname())
+    except:
+        pass
+
 
 
 @app.get("/")
@@ -49,12 +56,17 @@ async def scan_route(interface: Interface):
 app.mount("/", StaticFiles(directory=settings.UI_BUILD_PATH), name="public")
 
 
-def open_in_browser():
-    webbrowser.open(f'{settings.PROTOCOL}://{settings.HOST}:{settings.PORT}')
+def open_in_browser(host):
+    webbrowser.open(f'{settings.PROTOCOL}://{host}:{settings.PORT}')
 
 
 def main():
-    threading.Timer(1.25, open_in_browser).start()
+    host = settings.HOST
+    if settings.HOST == '0.0.0.0':
+        host = local_ip() or settings.HOST
+
+    print(f"Mscan running at {settings.PROTOCOL}://{host}:{settings.PORT}/")
+    threading.Timer(1.25, open_in_browser, (host, ) ).start()
     uvicorn.run(
         "main:app" if settings.DEV_MODE else app,
         host=settings.HOST,
