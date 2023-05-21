@@ -1,27 +1,17 @@
 import webbrowser
 import threading
+import socket
+import json
+import asyncio
 from mscan import settings
 from mscan.scanner.interface import InterfaceManager, Interface
 from mscan.scanner.scanner import Scanner
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.staticfiles import StaticFiles
-from starlette.responses import FileResponse
-import uvicorn
-import socket
+from bottle import Bottle, run, static_file, request, response
 
-app = FastAPI()
+app = Bottle()
 scanner = Scanner()
 imanager = InterfaceManager()
 
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 def local_ip():
     try:
@@ -30,52 +20,58 @@ def local_ip():
         pass
 
 
+@app.route("/")
+def index_route():
+    print(settings.UI_BUILD_PATH.absolute() / 'index.html')
+    return static_file("index.html", root=str(settings.UI_BUILD_PATH))
 
-@app.get("/")
-async def index_route():
-    return FileResponse(settings.UI_BUILD_PATH / "index.html")
 
-
-@app.get("/interfaces")
-async def interfaces_route():
+@app.route("/interfaces")
+def interfaces_route():
     """ Get list of interfaces """
     # exclude 255.0.0.0 netmask since it has too many ips, billions...
     interfaces = [
         i.to_dict() for i in imanager.get_interfaces()
         if i.prefix_length != 8
     ]
-    return {"interfaces": interfaces, "default": imanager.get_default()}
+    response.content_type = 'application/json'
+    return json.dumps({"interfaces": interfaces, "default": imanager.get_default().to_dict()})
 
 
 @app.post("/scan")
-async def scan_route(interface: Interface):
-    res = await scanner.scan(interface)
-    return res
+def scan_route():
+    interface_data = dict(request.json)
+    interface = Interface(**interface_data)
+    res = asyncio.run(scanner.scan(interface))
+    res = [i.to_dict() for i in res]
+    response.content_type = 'application/json'
+    return json.dumps(res)
 
 
-app.mount("/", StaticFiles(directory=settings.UI_BUILD_PATH), name="public")
+@app.route("/<filename:path>")
+def static_files(filename):
+    return static_file(filename, root=str(settings.UI_BUILD_PATH))
 
 
 def open_in_browser(host):
-    webbrowser.open(f'{settings.PROTOCOL}://{host}:{settings.PORT}')
+    webbrowser.open(f"{settings.PROTOCOL}://{host}:{settings.PORT}")
 
 
 def main():
     host = settings.HOST
-    if settings.HOST == '0.0.0.0':
+    if settings.HOST == "0.0.0.0":
         host = local_ip() or settings.HOST
 
     print(f"Mscan running at {settings.PROTOCOL}://{host}:{settings.PORT}/")
-    threading.Timer(1.25, open_in_browser, (host, ) ).start()
-    uvicorn.run(
-        "main:app" if settings.DEV_MODE else app,
+    threading.Timer(1.25, open_in_browser, (host,)).start()
+    run(
+        app,
         host=settings.HOST,
         port=settings.PORT,
-        reload=settings.DEV_MODE,
-        workers=1,
-        log_level=settings.LOG_LEVEL
+        reloader=settings.DEV_MODE,
+        server="gunicorn" if settings.DEV_MODE else "wsgiref",
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

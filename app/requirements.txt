@@ -1,5 +1,4 @@
-fastapi
-uvicorn[standrd]
+bottle
 icmplib
 psutil
 mac-vendor-lookup
