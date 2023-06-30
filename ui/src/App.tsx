@@ -2,7 +2,6 @@ import { useEffect, useState, Fragment } from 'react'
 import { Host, NetInterface, api } from './api'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import { Dialog } from '@headlessui/react'
 
 function App() {
 
@@ -11,7 +10,6 @@ function App() {
   const [warning, setWarning] = useState('')
   const [selectedInterface, setSelectedInterface] = useState<NetInterface>()
   const [hosts, setHosts] = useState<Host[]>([])
-  const [isOpen, setIsOpen] = useState(true)
   const [loading, setLoading] = useState(false)
 
 
@@ -132,26 +130,6 @@ function App() {
         ))}
 
       </ul>
-      {/* <table>
-        <thead>
-          <tr>
-            <th>ip</th>
-            <th>hostname</th>
-            <th>mac</th>
-            <th>vendor</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hosts.map(host => (
-            <tr key={host.ip}>
-              <td>{host.ip}</td>
-              <td>{host.hostname}</td>
-              <td>{host.mac}</td>
-              <td>{host.vendor}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
     </div>
   )
 }
