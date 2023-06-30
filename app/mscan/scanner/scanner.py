@@ -2,14 +2,13 @@ import concurrent.futures
 import socket
 from dataclasses import dataclass, asdict
 from typing import List
-
 from mac_vendor_lookup import AsyncMacLookup
-
+from .platform_detector import Platform
 from .arp import Arp, Host as ArpHost
 from .interface import Interface
 from .multi_ping import MultiPinger
 from .network import Network
-
+import re
 
 @dataclass
 class LiveHost:
@@ -27,7 +26,23 @@ class Scanner:
     BLACKLIST_SUFFIX = ['255']
 
     @staticmethod
-    def get_hostnames(hosts: List[ArpHost], max_workers=20):
+    def get_hostname(host):
+        try:
+            return socket.gethostbyaddr(host['ip'])[0]
+        except:
+            return ''
+
+    @staticmethod
+    def get_hostnames(hosts):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2500) as executer:
+            results = []
+            for host, result in zip(hosts, executer.map(Scanner.get_hostname, hosts)):
+                if result:
+                    results.append({**host, 'hostname': result})
+        return results
+
+    @staticmethod
+    def get_hostnames(hosts: List[ArpHost], max_workers=2500):
 
         def job(arp_host: ArpHost):
             try:
@@ -69,10 +84,24 @@ class Scanner:
                 live_hosts.append(live_host)
         return live_hosts
 
+
+    def arp_scan(self, hosts):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2500) as executer:
+            results = []
+            for host, result in zip(hosts, executer.map(Arp.get_mac, hosts)):
+                if result:
+                    result = re.sub(r'(..)', r'\1:', result)[:-1]
+                    result = result.upper()
+                    results.append(ArpHost(addr=host, hwaddr=result, addr_type='dynamic'))
+        return results
+    
     async def scan(self, iface: Interface) -> List[LiveHost]:
         network = Network.from_interface(iface)
         ips = [str(i) for i in network.ips]
-        await MultiPinger().ping(ips)
-        hosts = Arp.get_tables(iface)
+        if Platform.WINDOWS:
+            hosts = self.arp_scan(ips)
+        else:
+            await MultiPinger().ping(ips)
+            hosts = Arp.get_tables(iface)
         live = await self.get_live_hosts(hosts)
         return live

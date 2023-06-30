@@ -18,5 +18,5 @@ HOST = args.host
 PORT = args.port
 
 # UI settings
-UI_BUILD_PATH = (Path(__file__).parent / ("../../ui/build" if DEV_MODE else 'static')).resolve().absolute()
+UI_BUILD_PATH = (Path(__file__).parent / ("../../ui/dist" if DEV_MODE else 'static')).resolve().absolute()
 UI_BUILD_PATH.mkdir(exist_ok=True)

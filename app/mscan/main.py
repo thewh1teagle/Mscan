@@ -9,6 +9,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 import uvicorn
 import socket
+import asyncio
 
 app = FastAPI()
 scanner = Scanner()
@@ -61,6 +62,11 @@ def open_in_browser(host):
 
 
 def main():
+    # interfaces = list(imanager.get_interfaces())
+    # i = interfaces[3]
+    # res = await scanner.scan(i)
+    # print(res)
+    # return
     host = settings.HOST
     if settings.HOST == '0.0.0.0':
         host = local_ip() or settings.HOST
@@ -79,3 +85,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+
