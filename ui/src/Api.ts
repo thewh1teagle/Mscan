@@ -1,20 +1,23 @@
 import axios from 'axios';
 
-const DEV_MODE = process.env.NODE_ENV === "development"
+const DEV_MODE = import.meta.env.DEV
 
 const API_BASE_URL = DEV_MODE ? 'http://localhost:8000' : window.location.origin;
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL
 });
 
 
-export async function getInterfaces() {
-    const res = await api.get('/interfaces')
-    return res.data
+export interface NetInterface {
+  name: string
+  address: string
+  netmask: string
+  family: number
+  prefix_length: number
 }
-
-export async function scan(iface: any) {
-    const res = await api.post('/scan', iface)
-    return res.data
+export interface Host {
+  ip: string
+  mac: string
+  vendor: string
+  hostname: string
 }
-
